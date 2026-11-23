@@ -24,31 +24,31 @@ const STATUS_STYLES: Record<
   }
 > = {
   healthy: {
-    badgeBg: 'bg-emerald-50',
-    badgeText: 'text-emerald-800',
-    badgeBorder: 'border-emerald-200',
-    accentText: 'text-emerald-700',
+    badgeBg: 'bg-emerald-50 dark:bg-emerald-950/60',
+    badgeText: 'text-emerald-800 dark:text-emerald-300',
+    badgeBorder: 'border-emerald-200 dark:border-emerald-800/80',
+    accentText: 'text-emerald-700 dark:text-emerald-400',
     Icon: ShieldCheck,
   },
   warning: {
-    badgeBg: 'bg-amber-50',
-    badgeText: 'text-amber-800',
-    badgeBorder: 'border-amber-200',
-    accentText: 'text-amber-700',
+    badgeBg: 'bg-amber-50 dark:bg-amber-950/60',
+    badgeText: 'text-amber-800 dark:text-amber-300',
+    badgeBorder: 'border-amber-200 dark:border-amber-800/80',
+    accentText: 'text-amber-700 dark:text-amber-400',
     Icon: AlertTriangle,
   },
   critical: {
-    badgeBg: 'bg-red-50',
-    badgeText: 'text-red-800',
-    badgeBorder: 'border-red-200',
-    accentText: 'text-red-700',
+    badgeBg: 'bg-red-50 dark:bg-red-950/60',
+    badgeText: 'text-red-800 dark:text-red-300',
+    badgeBorder: 'border-red-200 dark:border-red-800/80',
+    accentText: 'text-red-700 dark:text-red-400',
     Icon: AlertOctagon,
   },
   unassessed: {
-    badgeBg: 'bg-slate-100',
-    badgeText: 'text-slate-700',
-    badgeBorder: 'border-slate-200',
-    accentText: 'text-slate-700',
+    badgeBg: 'bg-slate-100 dark:bg-slate-800',
+    badgeText: 'text-slate-700 dark:text-slate-300',
+    badgeBorder: 'border-slate-200 dark:border-slate-700',
+    accentText: 'text-slate-700 dark:text-slate-300',
     Icon: CircleDashed,
   },
 };
@@ -63,10 +63,10 @@ export function HealthSummaryCard({ analysis }: HealthSummaryCardProps) {
 
   const barColor =
     analysis.expenseRatio === null || analysis.expenseRatio > 100
-      ? 'bg-red-600'
+      ? 'bg-red-600 dark:bg-red-500'
       : analysis.expenseRatio > analysis.maxHealthyRatio
-        ? 'bg-amber-500'
-        : 'bg-emerald-600';
+        ? 'bg-amber-500 dark:bg-amber-400'
+        : 'bg-emerald-600 dark:bg-emerald-500';
 
   return (
     <section
@@ -74,76 +74,82 @@ export function HealthSummaryCard({ analysis }: HealthSummaryCardProps) {
       aria-label="Ringkasan Kesehatan Keuangan"
       data-testid="health-summary-card"
       data-health-level={analysis.healthLevel}
-      className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:p-6"
+      className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_6px_16px_-8px_rgba(15,23,42,0.05)] sm:p-5 dark:border-slate-800/90 dark:bg-slate-900/90 dark:shadow-none dark:ring-1 dark:ring-inset dark:ring-white/[0.03]"
     >
       {/* Header Row: Title & Explicit Semantic Status Badge */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-medium text-slate-500">
-            Ringkasan Realtime · {isCompany ? 'Mode Perusahaan' : 'Mode Pribadi'}
-          </p>
-          <h2 className="mt-0.5 text-lg font-bold tracking-tight text-slate-900">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-[15px] font-bold tracking-tight text-slate-900 dark:text-white">
             Kesehatan Keuangan
           </h2>
+          <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
+            · {isCompany ? 'Perusahaan' : 'Pribadi'}
+          </span>
         </div>
 
         <div
           data-testid="health-status-badge"
-          className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold whitespace-nowrap ${style.badgeBg} ${style.badgeText} ${style.badgeBorder}`}
+          className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-bold whitespace-nowrap ${style.badgeBg} ${style.badgeText} ${style.badgeBorder}`}
         >
-          <StatusIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <StatusIcon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           <span>{analysis.healthLabel}</span>
         </div>
       </div>
 
-      {/* Dominant Hero Metric: Net Cashflow */}
-      <div className="mt-5 border-t border-slate-100 pt-5">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      {/* Dominant Hero Metric: Net Cashflow + Crisp 3-Stat Strip */}
+      <div className="mt-3.5 border-t border-slate-100 pt-3.5 dark:border-slate-800/80">
+        <div className="flex flex-col justify-between gap-3 xl:flex-row xl:items-center">
           <div>
-            <p className="text-xs font-medium text-slate-500">Arus Kas Bersih per Bulan</p>
-            <div className="mt-1 flex items-center gap-2">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Arus Kas Bersih / Bulan
+            </p>
+            <div className="mt-0.5 flex items-center gap-1.5">
               <p
                 data-testid="net-cashflow-value"
-                className={`font-mono text-2xl font-bold tracking-tight tabular-nums sm:text-3xl ${
+                className={`font-mono text-2xl font-bold tracking-tight tabular-nums sm:text-[28px] ${
                   analysis.netCashflow > 0
-                    ? 'text-emerald-700'
+                    ? 'text-emerald-700 dark:text-emerald-400'
                     : analysis.netCashflow < 0
-                      ? 'text-red-700'
-                      : 'text-slate-900'
+                      ? 'text-red-700 dark:text-red-400'
+                      : 'text-slate-900 dark:text-white'
                 }`}
               >
                 {formatRupiah(analysis.netCashflow, { showSign: true })}
               </p>
               {analysis.netCashflow > 0 && (
-                <TrendingUp className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+                <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
               )}
               {analysis.netCashflow < 0 && (
-                <TrendingDown className="h-5 w-5 text-red-600" aria-hidden="true" />
+                <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" aria-hidden="true" />
               )}
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               {analysis.cashflowStatusLabel}
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
-            <div>
-              <span className="block text-slate-500">
-                {isCompany ? 'Omzet Bulanan' : 'Pendapatan'}
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            <div className="rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1.5 dark:border-slate-800/90 dark:bg-slate-950/60">
+              <span className="block text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                {isCompany ? 'Omzet' : 'Pendapatan'}
               </span>
-              <span className="mt-0.5 block font-mono font-semibold text-slate-900 tabular-nums">
+              <span className="mt-0.5 block font-mono text-xs font-semibold text-slate-900 tabular-nums dark:text-slate-100">
                 {formatRupiah(analysis.income)}
               </span>
             </div>
-            <div>
-              <span className="block text-slate-500">Total Pengeluaran</span>
-              <span className="mt-0.5 block font-mono font-semibold text-slate-900 tabular-nums">
+            <div className="rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1.5 dark:border-slate-800/90 dark:bg-slate-950/60">
+              <span className="block text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                Pengeluaran
+              </span>
+              <span className="mt-0.5 block font-mono text-xs font-semibold text-slate-900 tabular-nums dark:text-slate-100">
                 {formatRupiah(analysis.totalExpenses)}
               </span>
             </div>
-            <div>
-              <span className="block text-slate-500">Kas Saat Ini</span>
-              <span className="mt-0.5 block font-mono font-semibold text-slate-900 tabular-nums">
+            <div className="rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1.5 dark:border-slate-800/90 dark:bg-slate-950/60">
+              <span className="block text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                Kas Saat Ini
+              </span>
+              <span className="mt-0.5 block font-mono text-xs font-semibold text-slate-900 tabular-nums dark:text-slate-100">
                 {formatRupiah(analysis.cash)}
               </span>
             </div>
@@ -151,19 +157,19 @@ export function HealthSummaryCard({ analysis }: HealthSummaryCardProps) {
         </div>
 
         {/* Expense Ratio Progress Bar with Threshold Marker */}
-        <div className="mt-5">
-          <div className="flex items-center justify-between gap-2 text-xs">
-            <span className="font-medium text-slate-600">
+        <div className="mt-3.5">
+          <div className="flex items-center justify-between gap-2 text-[11px]">
+            <span className="font-medium text-slate-600 dark:text-slate-300">
               Rasio Pengeluaran terhadap {isCompany ? 'Omzet' : 'Pendapatan'}
             </span>
             <span
               data-testid="expense-ratio-value"
-              className="font-mono font-semibold text-slate-900 tabular-nums"
+              className="font-mono font-bold text-slate-900 tabular-nums dark:text-white"
             >
               {analysis.expenseRatioLabel}
             </span>
           </div>
-          <div className="relative mt-2 h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+          <div className="relative mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div
               className={`h-full rounded-full transition-all duration-200 ${barColor}`}
               style={{ width: `${clampedBarPercent}%` }}
@@ -171,11 +177,11 @@ export function HealthSummaryCard({ analysis }: HealthSummaryCardProps) {
             <div
               aria-hidden="true"
               title={`Batas ideal ${analysis.maxHealthyRatio}%`}
-              className="absolute top-0 bottom-0 w-0.5 bg-slate-900/50"
+              className="absolute top-0 bottom-0 w-0.5 bg-slate-900/60 dark:bg-white/70"
               style={{ left: `${analysis.maxHealthyRatio}%` }}
             />
           </div>
-          <div className="mt-1.5 flex items-center justify-between text-[11px] text-slate-500">
+          <div className="mt-1 flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
             <span>0%</span>
             <span>
               Batas sehat {isCompany ? 'perusahaan' : 'pribadi'}: ≤ {analysis.maxHealthyRatio}%
@@ -185,88 +191,90 @@ export function HealthSummaryCard({ analysis }: HealthSummaryCardProps) {
         </div>
       </div>
 
-      {/* Dual-Perspective Runway Grid (Hairline Separated, No Nested Cards) */}
-      <div className="mt-5 grid grid-cols-1 divide-y divide-slate-100 border-t border-slate-100 pt-4 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
+      {/* Dual-Perspective Runway Grid (Compact Hairline Separated) */}
+      <div className="mt-3.5 grid grid-cols-1 divide-y divide-slate-100 border-t border-slate-100 pt-3.5 sm:grid-cols-2 sm:divide-x sm:divide-y-0 dark:divide-slate-800/80 dark:border-slate-800/80">
         {/* Perspective 1: Cashflow / Deficit Runway */}
-        <div className="pb-4 sm:pr-5 sm:pb-0">
+        <div className="pb-3 sm:pr-4 sm:pb-0">
           {analysis.cashflowCase === 'deficit' ? (
             <>
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                 Estimasi Kas Bertahan (Menutup Defisit)
               </p>
               <p
                 data-testid="primary-runway-value"
-                className="mt-1 font-mono text-xl font-bold text-red-700 tabular-nums"
+                className="mt-0.5 font-mono text-lg font-bold text-red-700 tabular-nums dark:text-red-400"
               >
                 {analysis.deficitRunwayLabel}
               </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Defisit (burn rate){' '}
-                <span className="font-mono font-semibold text-slate-700 tabular-nums">
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                Burn rate{' '}
+                <span className="font-mono font-semibold text-slate-700 tabular-nums dark:text-slate-200">
                   {formatRupiah(analysis.burnRate)}/bln
                 </span>
               </p>
             </>
           ) : analysis.cashflowCase === 'no_expenses' ? (
             <>
-              <p className="text-xs font-medium text-slate-500">Status Ketahanan Dana</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Status Ketahanan Dana</p>
               <p
                 data-testid="primary-runway-value"
-                className="mt-1 text-base font-semibold text-slate-700"
+                className="mt-0.5 text-sm font-semibold text-slate-700 dark:text-slate-200"
               >
                 Belum ada pengeluaran tercatat
               </p>
-              <p className="mt-1 text-xs text-slate-500">
-                Tambahkan minimal satu pengeluaran untuk menghitung runway kas.
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                Tambahkan minimal satu pos untuk menghitung runway kas.
               </p>
             </>
           ) : (
             <>
-              <p className="text-xs font-medium text-slate-500">Status Arus Kas Bulanan</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Status Arus Kas Bulanan</p>
               <p
                 data-testid="primary-runway-value"
-                className={`mt-1 text-base font-bold leading-snug sm:text-lg ${
-                  analysis.cashflowCase === 'surplus' ? 'text-emerald-700' : 'text-amber-700'
+                className={`mt-0.5 text-sm font-bold leading-snug sm:text-[15px] ${
+                  analysis.cashflowCase === 'surplus'
+                    ? 'text-emerald-700 dark:text-emerald-400'
+                    : 'text-amber-700 dark:text-amber-400'
                 }`}
               >
                 {analysis.cashflowCase === 'surplus' ? 'Bertumbuh ' : 'Impas '}
                 <span className="font-mono whitespace-nowrap tabular-nums">
-                  ({formatRupiah(analysis.netCashflow, { showSign: true })} / bulan)
+                  ({formatRupiah(analysis.netCashflow, { showSign: true })}/bln)
                 </span>
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
                 {analysis.cashflowCase === 'surplus'
-                  ? 'Kas tidak tergerus selama arus kas tetap positif.'
-                  : 'Pendapatan persis sama dengan total pengeluaran.'}
+                  ? 'Kas tidak tergerus selama arus kas positif.'
+                  : 'Pendapatan persis sama dengan pengeluaran.'}
               </p>
             </>
           )}
         </div>
 
         {/* Perspective 2: Emergency Runway (Zero Income Scenario) */}
-        <div className="pt-4 sm:pt-0 sm:pl-5">
-          <p className="text-xs font-medium text-slate-500">
-            Ketahanan {isCompany ? 'Kas Operasional' : 'Dana Darurat'} (Jika Tanpa Pemasukan)
+        <div className="pt-3 sm:pt-0 sm:pl-4">
+          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+            Ketahanan {isCompany ? 'Kas Operasional' : 'Dana Darurat'} (Tanpa Pemasukan)
           </p>
           <p
             data-testid="emergency-runway-value"
-            className={`mt-1 font-mono text-xl font-bold tabular-nums ${
+            className={`mt-0.5 font-mono text-lg font-bold tabular-nums ${
               analysis.emergencyRunwayMonths === null
-                ? 'text-slate-600'
+                ? 'text-slate-600 dark:text-slate-400'
                 : analysis.emergencyRunwayMonths >= 6
-                  ? 'text-emerald-700'
+                  ? 'text-emerald-700 dark:text-emerald-400'
                   : analysis.emergencyRunwayMonths >= 3
-                    ? 'text-amber-700'
-                    : 'text-red-700'
+                    ? 'text-amber-700 dark:text-amber-400'
+                    : 'text-red-700 dark:text-red-400'
             }`}
           >
             {analysis.emergencyRunwayLabel}
           </p>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
             {analysis.totalExpenses > 0 ? (
               <>
-                Target ideal 6 bulan:{' '}
-                <span className="font-mono font-semibold text-slate-700 tabular-nums">
+                Target 6 bulan:{' '}
+                <span className="font-mono font-semibold text-slate-700 tabular-nums dark:text-slate-200">
                   {formatRupiah(analysis.targetEmergencyFund)}
                 </span>
               </>
