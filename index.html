@@ -22,10 +22,21 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <script type="module" crossorigin src="/tabungin/assets/index-CZRB-Mbs.js"></script>
-    <link rel="stylesheet" crossorigin href="/tabungin/assets/index-BUm8q-In.css">
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('tabungin_theme_v1');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'dark' || (!stored && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" crossorigin src="/tabungin/assets/index-DjEXbT-z.js"></script>
+    <link rel="stylesheet" crossorigin href="/tabungin/assets/index-Br6WGVdt.css">
   </head>
-  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
+  <body class="bg-slate-50 text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900 dark:bg-slate-950 dark:text-slate-100 dark:selection:bg-teal-900/60 dark:selection:text-teal-200">
     <div id="root"></div>
   </body>
 </html>
