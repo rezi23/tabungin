@@ -7,11 +7,62 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* ==========================================================================
+   3-Layer Token Architecture (Primitive -> Semantic -> Component)
+   Swiss-Precision Financial Workspace (Light & OLED Carbon Dark)
+   ========================================================================== */
+:root {
+  /* Layer 1: Primitives */
+  --p-zinc-50: #F8F8F7;
+  --p-zinc-100: #F1F1EFE9;
+  --p-zinc-200: #E4E4E7;
+  --p-zinc-300: #D4D4D8;
+  --p-zinc-500: #71717A;
+  --p-zinc-600: #52525B;
+  --p-zinc-900: #18181B;
+  --p-zinc-950: #09090B;
+
+  /* Layer 2: Semantic Surface & Ink Tokens */
+  --bg-canvas: #F6F6F4;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #FAFAFA;
+  --bg-muted: #F2F2F0;
+  --text-primary: #09090B;
+  --text-secondary: #52525B;
+  --text-muted: #71717A;
+  --border-subtle: #E4E4E7;
+  --border-strong: #D4D4D8;
+
+  /* Layer 3: Component Tokens */
+  --card-shadow: 0 1px 2px rgba(9, 9, 11, 0.04), 0 0 0 1px rgba(9, 9, 11, 0.06);
+  --input-shadow: inset 0 1px 1.5px rgba(9, 9, 11, 0.03);
+}
+
+html.dark {
+  --bg-canvas: #09090B;
+  --bg-surface: #111114;
+  --bg-subtle: #16161A;
+  --bg-muted: #1C1C22;
+  --text-primary: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --border-subtle: #232329;
+  --border-strong: #2E2E38;
+
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --input-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
 @layer base {
   html {
     font-family: var(--font-sans);
     scroll-behavior: smooth;
     color-scheme: light;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html.dark {
@@ -29,22 +80,14 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Twinkling stars inside the dark toggle */
-@keyframes twinkle {
-  0%, 100% {
-    opacity: 0.35;
-    transform: scale(0.85);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.25);
-  }
+.fin-card {
+  background-color: var(--bg-surface);
+  box-shadow: var(--card-shadow);
 }
 
-.animate-twinkle {
-  animation: twinkle 2.4s ease-in-out infinite;
-}
-
-.animate-twinkle-delayed {
-  animation: twinkle 3.1s ease-in-out 0.9s infinite;
+/* Clean, Subtle View Transition for Theme Switch (No Gimmicks) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 240ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }

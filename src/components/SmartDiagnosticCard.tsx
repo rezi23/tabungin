@@ -1,4 +1,3 @@
-import { Lightbulb } from 'lucide-react';
 import type { FinancialAnalysis, HealthLevel } from '../types/finance';
 import { formatPercent, formatRupiah } from '../utils/finance';
 
@@ -6,133 +5,135 @@ interface SmartDiagnosticCardProps {
   analysis: FinancialAnalysis;
 }
 
-const SURFACE_BY_LEVEL: Record<HealthLevel, { surface: string; border: string; iconBg: string }> = {
+const ACCENT_BY_LEVEL: Record<HealthLevel, { dot: string; label: string }> = {
   healthy: {
-    surface: 'bg-emerald-50/45 dark:bg-emerald-950/30',
-    border: 'border-emerald-200/80 dark:border-emerald-800/60',
-    iconBg: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-300',
+    dot: 'bg-emerald-500',
+    label: 'Diagnosis: Kondisi Optimal',
   },
   warning: {
-    surface: 'bg-amber-50/50 dark:bg-amber-950/30',
-    border: 'border-amber-200/85 dark:border-amber-800/60',
-    iconBg: 'bg-amber-100 text-amber-800 dark:bg-amber-900/70 dark:text-amber-300',
+    dot: 'bg-amber-500',
+    label: 'Diagnosis: Perlu Penyesuaian',
   },
   critical: {
-    surface: 'bg-red-50/45 dark:bg-red-950/30',
-    border: 'border-red-200/85 dark:border-red-800/60',
-    iconBg: 'bg-red-100 text-red-800 dark:bg-red-900/70 dark:text-red-300',
+    dot: 'bg-red-500',
+    label: 'Diagnosis: Risiko Likuiditas',
   },
   unassessed: {
-    surface: 'bg-slate-50 dark:bg-slate-900/90',
-    border: 'border-slate-200 dark:border-slate-800',
-    iconBg: 'bg-slate-200/80 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    dot: 'bg-zinc-400',
+    label: 'Diagnosis: Menunggu Data',
   },
 };
 
 export function SmartDiagnosticCard({ analysis }: SmartDiagnosticCardProps) {
   const { diagnostic, largestExpense } = analysis;
-  const theme = SURFACE_BY_LEVEL[analysis.healthLevel];
+  const accent = ACCENT_BY_LEVEL[analysis.healthLevel];
 
   return (
     <section
       id="analisis-pintar"
       aria-label="Analisis dan Alasan Pintar Realtime"
       data-testid="smart-diagnostic-card"
-      className={`rounded-xl border p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_6px_16px_-8px_rgba(15,23,42,0.04)] sm:p-5 dark:shadow-none dark:ring-1 dark:ring-inset dark:ring-white/[0.03] ${theme.surface} ${theme.border}`}
+      className="fin-card overflow-hidden rounded-xl divide-y divide-zinc-200/80 dark:divide-zinc-800/80"
     >
-      <div className="flex items-start gap-2.5">
-        <div
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${theme.iconBg}`}
-        >
-          <Lightbulb className="h-4 w-4" aria-hidden="true" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Analisis Pintar Realtime
-          </p>
-          <h3 className="mt-0.5 text-sm font-bold leading-snug text-slate-900 text-balance sm:text-[15px] dark:text-white">
-            {diagnostic.headline}
+      {/* 1. Report Header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 bg-zinc-50/70 px-4 py-3 dark:bg-zinc-900/50">
+        <div className="flex items-center gap-2">
+          <span className={`h-2 w-2 rounded-full ${accent.dot}`} aria-hidden="true" />
+          <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+            {accent.label}
           </h3>
         </div>
+        <span className="font-mono text-[10px] font-medium text-zinc-500 uppercase dark:text-zinc-400">
+          {analysis.mode === 'company' ? 'Evaluasi Korporasi' : 'Evaluasi Personal'}
+        </span>
       </div>
 
-      <div className="mt-3 space-y-3 text-xs leading-relaxed text-slate-700 sm:text-[13px] dark:text-slate-300">
-        {/* Why this status */}
-        <p>{diagnostic.reasonSummary}</p>
+      {/* 2. Primary Diagnostic Narrative */}
+      <div className="p-4">
+        <h4 className="text-sm font-bold leading-snug text-zinc-950 sm:text-[15px] dark:text-white">
+          {diagnostic.headline}
+        </h4>
+        <p className="mt-1.5 text-xs leading-relaxed text-zinc-600 sm:text-[13px] dark:text-zinc-300">
+          {diagnostic.reasonSummary}
+        </p>
+      </div>
 
-        {/* Largest Expense & Impact Simulation in sleek inset wells */}
-        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-          <div className="rounded-lg border border-slate-900/[0.07] bg-white/70 p-3 dark:border-white/[0.06] dark:bg-slate-950/40">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Pos Pengeluaran Terbesar
-            </p>
-            {largestExpense ? (
-              <div className="mt-1">
-                <p className="text-xs font-bold text-slate-900 sm:text-[13px] dark:text-white">
-                  {largestExpense.name}{' '}
-                  <span className="font-mono font-bold text-slate-900 tabular-nums dark:text-white">
-                    ({formatPercent(largestExpense.percentage)})
-                  </span>
+      {/* 3. Two-Column Impact & Bottleneck Specification */}
+      <div className="grid grid-cols-1 divide-y divide-zinc-200/80 sm:grid-cols-2 sm:divide-x sm:divide-y-0 dark:divide-zinc-800/80">
+        <div className="p-4">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            Konsentrasi Beban Terbesar
+          </span>
+          {largestExpense ? (
+            <div className="mt-1">
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-xs font-bold text-zinc-950 sm:text-[13px] dark:text-white">
+                  {largestExpense.name}
                 </p>
-                <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
-                  {diagnostic.largestExpenseNote}
-                </p>
+                <span className="font-mono text-xs font-bold text-zinc-900 tabular-nums dark:text-zinc-100">
+                  {formatPercent(largestExpense.percentage)}
+                </span>
               </div>
-            ) : (
-              <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400">
+              <p className="mt-1 text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400">
                 {diagnostic.largestExpenseNote}
               </p>
-            )}
-          </div>
-
-          <div className="rounded-lg border border-slate-900/[0.07] bg-white/70 p-3 dark:border-white/[0.06] dark:bg-slate-950/40">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Simulasi Dampak Nyata
+            </div>
+          ) : (
+            <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+              {diagnostic.largestExpenseNote}
             </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
-              {diagnostic.impactSimulation}
-            </p>
-          </div>
+          )}
         </div>
 
-        {/* Tactical Recommendations */}
-        <div className="pt-0.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            Rekomendasi Taktis ({analysis.mode === 'company' ? 'Perusahaan' : 'Pribadi'})
+        <div className="p-4">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            Simulasi Dampak 12 Bulan
+          </span>
+          <p className="mt-1 text-[11px] leading-relaxed text-zinc-600 dark:text-zinc-300">
+            {diagnostic.impactSimulation}
           </p>
-          <ol className="mt-2 space-y-1.5">
-            {diagnostic.recommendations.map((rec, index) => (
-              <li
-                key={index}
-                className="flex items-start gap-2 text-xs leading-relaxed text-slate-700 dark:text-slate-300"
-              >
-                <span className="mt-0.5 inline-flex h-4.5 min-w-[22px] shrink-0 items-center justify-center rounded bg-slate-900/10 px-1 font-mono text-[10px] font-bold text-slate-800 tabular-nums dark:bg-white/10 dark:text-slate-200">
-                  0{index + 1}
-                </span>
-                <span>{rec}</span>
-              </li>
-            ))}
-          </ol>
         </div>
-
-        {/* Quick 12-month delta summary footer line */}
-        {analysis.totalExpenses > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-900/10 pt-2.5 text-xs text-slate-600 dark:border-white/10 dark:text-slate-400">
-            <span className="font-medium">Proyeksi saldo 12 bulan ke depan:</span>
-            <span
-              className={`font-mono text-[13px] font-bold tabular-nums ${
-                analysis.projection[12].balance < 0
-                  ? 'text-red-700 dark:text-red-400'
-                  : analysis.netCashflow >= 0
-                    ? 'text-emerald-800 dark:text-emerald-400'
-                    : 'text-amber-800 dark:text-amber-400'
-              }`}
-            >
-              {formatRupiah(analysis.projection[12].balance)}
-            </span>
-          </div>
-        )}
       </div>
+
+      {/* 4. Actionable Recommendations Ledger */}
+      <div className="p-4">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+          Rencana Tindakan Prioritas
+        </span>
+        <ol className="mt-2.5 divide-y divide-zinc-100 dark:divide-zinc-800/70">
+          {diagnostic.recommendations.map((rec, index) => (
+            <li
+              key={index}
+              className="flex items-start gap-3 py-2 first:pt-0 last:pb-0 text-xs leading-relaxed text-zinc-700 dark:text-zinc-300"
+            >
+              <span className="mt-0.5 font-mono text-[11px] font-bold text-zinc-400 tabular-nums dark:text-zinc-500">
+                0{index + 1}
+              </span>
+              <span>{rec}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      {/* 5. Footer Summary Bar */}
+      {analysis.totalExpenses > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-2 bg-zinc-50/70 px-4 py-2.5 text-xs dark:bg-zinc-900/50">
+          <span className="font-medium text-zinc-500 dark:text-zinc-400">
+            Estimasi posisi kas akhir bulan ke-12:
+          </span>
+          <span
+            className={`font-mono text-xs font-bold tabular-nums ${
+              analysis.projection[12].balance < 0
+                ? 'text-red-600 dark:text-red-400'
+                : analysis.netCashflow >= 0
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : 'text-amber-600 dark:text-amber-400'
+            }`}
+          >
+            {formatRupiah(analysis.projection[12].balance)}
+          </span>
+        </div>
+      )}
     </section>
   );
 }

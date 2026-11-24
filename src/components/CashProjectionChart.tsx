@@ -8,12 +8,12 @@ interface CashProjectionChartProps {
 }
 
 const BREAKDOWN_COLORS = [
-  'bg-teal-700 dark:bg-teal-500',
-  'bg-slate-700 dark:bg-indigo-400',
+  'bg-zinc-900 dark:bg-zinc-100',
+  'bg-emerald-600 dark:bg-emerald-400',
+  'bg-zinc-500 dark:bg-zinc-400',
   'bg-amber-500 dark:bg-amber-400',
   'bg-sky-600 dark:bg-sky-400',
-  'bg-emerald-500 dark:bg-emerald-400',
-  'bg-slate-400 dark:bg-slate-500',
+  'bg-zinc-300 dark:bg-zinc-600',
 ];
 
 export function CashProjectionChart({ analysis, isDark = false }: CashProjectionChartProps) {
@@ -22,13 +22,13 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
 
   const activePoint = projection[selectedMonth] ?? projection[12];
 
-  // SVG Geometry — crisp compact aspect ratio with generous left padding for compact Rupiah labels
+  // SVG Geometry
   const width = 680;
-  const height = 224;
-  const padLeft = 86;
+  const height = 216;
+  const padLeft = 84;
   const padRight = 20;
-  const padTop = 20;
-  const padBottom = 32;
+  const padTop = 18;
+  const padBottom = 30;
   const plotW = width - padLeft - padRight;
   const plotH = height - padTop - padBottom;
 
@@ -36,7 +36,6 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
   const rawMin = Math.min(...balances, 0);
   const rawMax = Math.max(...balances, 0);
 
-  // Compute clean human-readable axis bounds and 4 evenly spaced ticks
   const rawSpan = Math.max(rawMax - rawMin, 1_000_000);
   const roughStep = rawSpan / 3;
   const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
@@ -63,7 +62,6 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
   const areaBaseY = Math.min(padTop + plotH, Math.max(padTop, zeroY));
   const areaPath = `${linePath} L ${getX(12).toFixed(1)} ${areaBaseY.toFixed(1)} L ${getX(0).toFixed(1)} ${areaBaseY.toFixed(1)} Z`;
 
-  // Clean horizontal gridlines
   const yTicks = [0, 1, 2, 3].map((step) => {
     const val = minVal + ((maxVal - minVal) * step) / 3;
     return { val, y: getY(val) };
@@ -73,19 +71,19 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
     netCashflow < 0
       ? isDark ? '#F87171' : '#DC2626'
       : netCashflow > 0
-        ? isDark ? '#2DD4BF' : '#0F766E'
+        ? isDark ? '#10B981' : '#059669'
         : isDark ? '#FBBF24' : '#D97706';
   const fillId =
     netCashflow < 0
       ? 'projGradRed'
       : netCashflow > 0
-        ? 'projGradTeal'
+        ? 'projGradGreen'
         : 'projGradAmber';
-  const gridStroke = isDark ? '#1E293B' : '#E2E8F0';
-  const nodeIdleFill = isDark ? '#0F172A' : '#FFFFFF';
-  const cursorLineStroke = isDark ? '#F8FAFC' : '#0F172A';
-  const targetStroke = isDark ? '#2DD4BF' : '#0F766E';
-  const zeroStroke = isDark ? '#64748B' : '#94A3B8';
+  const gridStroke = isDark ? '#232329' : '#E4E4E7';
+  const nodeIdleFill = isDark ? '#111114' : '#FFFFFF';
+  const cursorLineStroke = isDark ? '#FAFAFA' : '#09090B';
+  const targetStroke = isDark ? '#71717A' : '#71717A';
+  const zeroStroke = isDark ? '#52525B' : '#A1A1AA';
   const zeroCrossStroke = isDark ? '#F87171' : '#DC2626';
 
   const showTargetLine =
@@ -115,42 +113,58 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
     <section
       id="proyeksi-saldo"
       aria-label="Grafik Proyeksi Saldo Kas 12 Bulan"
-      className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_6px_16px_-8px_rgba(15,23,42,0.05)] sm:p-5 dark:border-slate-800/90 dark:bg-slate-900/90 dark:shadow-none dark:ring-1 dark:ring-inset dark:ring-white/[0.03]"
+      className="fin-card overflow-hidden rounded-xl divide-y divide-zinc-200/80 dark:divide-zinc-800/80"
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
+      {/* 1. Chart Header & Interactive Month Readout */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-zinc-50/70 px-4 py-3 dark:bg-zinc-900/50">
         <div>
-          <h3 className="text-sm font-bold tracking-tight text-slate-900 sm:text-[15px] dark:text-white">
-            Proyeksi Saldo Kas 12 Bulan ke Depan
+          <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">
+            Proyeksi Saldo Kas 12 Bulan
           </h3>
-          <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-            Simulasi linier arus kas · Arahkan atau klik titik bulan
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+            Simulasi linier arus kas · Arahkan kursor atau klik titik bulan
           </p>
         </div>
 
-        {/* Interactive Active Month Readout */}
-        <div className="text-left sm:text-right">
-          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-            {activePoint.monthLabel} · {activePoint.calendarLabel}
-          </p>
-          <p
-            className={`font-mono text-sm font-bold tabular-nums sm:text-[15px] ${
-              activePoint.balance < 0
-                ? 'text-red-700 dark:text-red-400'
-                : 'text-slate-900 dark:text-white'
-            }`}
-          >
-            {formatRupiah(activePoint.balance)}
-          </p>
-          <p className="font-mono text-[10px] text-slate-500 tabular-nums dark:text-slate-400">
-            {activePoint.monthIndex === 0
-              ? 'Saldo awal'
-              : `Selisih ${formatRupiah(activePoint.cumulativeChange, { showSign: true })}`}
-          </p>
+        <div className="flex items-center gap-3 rounded-lg border border-zinc-200/90 bg-white px-3 py-1.5 dark:border-zinc-800 dark:bg-zinc-950">
+          <div>
+            <span className="block text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+              {activePoint.monthLabel} ({activePoint.calendarLabel})
+            </span>
+            <span
+              className={`font-mono text-sm font-bold tabular-nums ${
+                activePoint.balance < 0
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-zinc-950 dark:text-white'
+              }`}
+            >
+              {formatRupiah(activePoint.balance)}
+            </span>
+          </div>
+          <span aria-hidden="true" className="h-6 w-px bg-zinc-200 dark:bg-zinc-800" />
+          <div className="text-right">
+            <span className="block text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
+              Akumulasi
+            </span>
+            <span
+              className={`font-mono text-xs font-semibold tabular-nums ${
+                activePoint.cumulativeChange > 0
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : activePoint.cumulativeChange < 0
+                    ? 'text-red-600 dark:text-red-400'
+                    : 'text-zinc-600 dark:text-zinc-400'
+              }`}
+            >
+              {activePoint.monthIndex === 0
+                ? 'Awal'
+                : formatRupiahCompact(activePoint.cumulativeChange)}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Responsive SVG Area/Line Chart */}
-      <div className="mt-3 w-full overflow-hidden">
+      {/* 2. SVG Trajectory Plot */}
+      <div className="px-4 py-3.5">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           role="img"
@@ -158,17 +172,17 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
           className="h-auto w-full select-none"
         >
           <defs>
-            <linearGradient id="projGradTeal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={isDark ? '#2DD4BF' : '#0F766E'} stopOpacity={isDark ? '0.28' : '0.22'} />
-              <stop offset="100%" stopColor={isDark ? '#2DD4BF' : '#0F766E'} stopOpacity="0.01" />
+            <linearGradient id="projGradGreen" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={isDark ? '#10B981' : '#059669'} stopOpacity={isDark ? '0.22' : '0.16'} />
+              <stop offset="100%" stopColor={isDark ? '#10B981' : '#059669'} stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="projGradAmber" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={isDark ? '#FBBF24' : '#D97706'} stopOpacity={isDark ? '0.26' : '0.20'} />
-              <stop offset="100%" stopColor={isDark ? '#FBBF24' : '#D97706'} stopOpacity="0.01" />
+              <stop offset="0%" stopColor={isDark ? '#FBBF24' : '#D97706'} stopOpacity={isDark ? '0.20' : '0.15'} />
+              <stop offset="100%" stopColor={isDark ? '#FBBF24' : '#D97706'} stopOpacity="0.0" />
             </linearGradient>
             <linearGradient id="projGradRed" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={isDark ? '#F87171' : '#DC2626'} stopOpacity={isDark ? '0.26' : '0.20'} />
-              <stop offset="100%" stopColor={isDark ? '#F87171' : '#DC2626'} stopOpacity="0.01" />
+              <stop offset="0%" stopColor={isDark ? '#F87171' : '#DC2626'} stopOpacity={isDark ? '0.22' : '0.16'} />
+              <stop offset="100%" stopColor={isDark ? '#F87171' : '#DC2626'} stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -187,7 +201,7 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
                 x={padLeft - 10}
                 y={tick.y + 3.5}
                 textAnchor="end"
-                className="fill-slate-500 text-[10px] dark:fill-slate-400"
+                className="fill-zinc-400 text-[10px] dark:fill-zinc-500"
                 style={{ fontFamily: 'var(--font-mono)' }}
               >
                 {formatRupiahCompact(tick.val)}
@@ -204,22 +218,22 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
                 x2={width - padRight}
                 y2={getY(targetEmergencyFund)}
                 stroke={targetStroke}
-                strokeWidth="1.25"
-                strokeDasharray="4 4"
-                strokeOpacity="0.6"
+                strokeWidth="1"
+                strokeDasharray="3 3"
+                strokeOpacity="0.7"
               />
               <text
                 x={width - padRight}
-                y={getY(targetEmergencyFund) - 6}
+                y={getY(targetEmergencyFund) - 5}
                 textAnchor="end"
-                className="fill-teal-700 text-[10px] font-medium dark:fill-teal-400"
+                className="fill-zinc-500 text-[10px] font-medium dark:fill-zinc-400"
               >
-                Target aman 6 bln ({formatRupiahCompact(targetEmergencyFund)})
+                Target 6 bln ({formatRupiahCompact(targetEmergencyFund)})
               </text>
             </g>
           )}
 
-          {/* Zero Baseline (placed cleanly on the right edge above the line so it never collides with declining curves) */}
+          {/* Zero Baseline */}
           {minVal < 0 && (
             <g>
               <line
@@ -228,16 +242,16 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
                 x2={width - padRight}
                 y2={zeroY}
                 stroke={zeroStroke}
-                strokeWidth="1.25"
+                strokeWidth="1"
                 strokeDasharray="3 3"
               />
               <text
                 x={width - padRight}
-                y={zeroY - 6}
+                y={zeroY - 5}
                 textAnchor="end"
-                className="fill-slate-600 text-[10px] font-semibold dark:fill-slate-300"
+                className="fill-zinc-600 text-[10px] font-semibold dark:fill-zinc-300"
               >
-                Batas Rp 0 (Kas Habis)
+                Batas Rp 0
               </text>
             </g>
           )}
@@ -248,7 +262,7 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
             d={linePath}
             fill="none"
             stroke={strokeColor}
-            strokeWidth="2.5"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -263,21 +277,21 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
                 y2={padTop + plotH}
                 stroke={zeroCrossStroke}
                 strokeWidth="1"
-                strokeDasharray="3 3"
+                strokeDasharray="2 2"
                 strokeOpacity="0.6"
               />
               <circle
                 cx={getX(zeroCrossMonth)}
                 cy={zeroY}
-                r="4.5"
+                r="4"
                 fill={zeroCrossStroke}
                 stroke={nodeIdleFill}
-                strokeWidth="2"
+                strokeWidth="1.5"
               />
               <text
                 x={Math.min(width - padRight - 72, Math.max(padLeft + 4, getX(zeroCrossMonth) + 8))}
-                y={Math.max(padTop + 12, zeroY - 12)}
-                className="fill-red-700 text-[10px] font-semibold dark:fill-red-400"
+                y={Math.max(padTop + 12, zeroY - 10)}
+                className="fill-red-600 text-[10px] font-semibold dark:fill-red-400"
               >
                 Habis Bln {zeroCrossMonth.toFixed(1).replace('.0', '').replace('.', ',')}
               </text>
@@ -296,9 +310,9 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
                 {showXLabel && (
                   <text
                     x={cx}
-                    y={height - 12}
+                    y={height - 10}
                     textAnchor="middle"
-                    className="fill-slate-500 text-[10px] font-medium dark:fill-slate-400"
+                    className="fill-zinc-400 text-[10px] font-medium dark:fill-zinc-500"
                   >
                     {point.monthIndex === 0 ? 'Saat Ini' : point.calendarLabel.split(' ')[0]}
                   </text>
@@ -312,20 +326,19 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
                     y2={padTop + plotH}
                     stroke={cursorLineStroke}
                     strokeWidth="1"
-                    strokeOpacity="0.2"
+                    strokeOpacity="0.18"
                   />
                 )}
 
                 <circle
                   cx={cx}
                   cy={cy}
-                  r={isSelected ? 5.5 : 3.5}
+                  r={isSelected ? 4.5 : 3}
                   fill={isSelected ? strokeColor : nodeIdleFill}
                   stroke={strokeColor}
-                  strokeWidth="2"
+                  strokeWidth="1.75"
                 />
 
-                {/* Generous invisible hit area for mouse & touch */}
                 <rect
                   x={cx - plotW / 26}
                   y={padTop}
@@ -342,34 +355,34 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
         </svg>
       </div>
 
-      {/* Expense Composition Breakdown */}
+      {/* 3. Expense Composition Ledger */}
       {displayBreakdown.length > 0 && (
-        <div className="mt-4 border-t border-slate-100 pt-3.5 dark:border-slate-800/80">
+        <div className="px-4 py-3.5">
           <div className="flex items-center justify-between gap-2">
-            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Komposisi Pengeluaran ({analysis.expenseBreakdown.length} pos aktif)
+            <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+              Distribusi Pengeluaran ({analysis.expenseBreakdown.length} Pos Aktif)
             </h4>
-            <span className="font-mono text-xs font-semibold text-slate-700 tabular-nums dark:text-slate-300">
+            <span className="font-mono text-xs font-semibold text-zinc-800 tabular-nums dark:text-zinc-200">
               {formatRupiah(analysis.totalExpenses)}/bln
             </span>
           </div>
 
-          {/* Stacked Proportion Bar */}
+          {/* Segmented Proportion Bar */}
           <div
             aria-hidden="true"
-            className="mt-2 flex h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+            className="mt-2 flex h-1.5 w-full gap-0.5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800"
           >
             {displayBreakdown.map((item, idx) => (
               <div
                 key={item.id}
                 style={{ width: `${Math.max(1.5, item.percentage)}%` }}
-                className={`${BREAKDOWN_COLORS[idx % BREAKDOWN_COLORS.length]} transition-all duration-200 first:rounded-l-full last:rounded-r-full`}
+                className={`${BREAKDOWN_COLORS[idx % BREAKDOWN_COLORS.length]} transition-all duration-200`}
               />
             ))}
           </div>
 
-          {/* Clean Tabular Breakdown List */}
-          <div className="mt-3 grid grid-cols-1 gap-x-5 gap-y-1.5 sm:grid-cols-2">
+          {/* 2-Column Tabular Legend */}
+          <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
             {displayBreakdown.map((item, idx) => (
               <div
                 key={item.id}
@@ -380,11 +393,15 @@ export function CashProjectionChart({ analysis, isDark = false }: CashProjection
                     aria-hidden="true"
                     className={`h-2 w-2 shrink-0 rounded-[2px] ${BREAKDOWN_COLORS[idx % BREAKDOWN_COLORS.length]}`}
                   />
-                  <span className="truncate font-medium text-slate-700 dark:text-slate-300">{item.name}</span>
+                  <span className="truncate font-medium text-zinc-700 dark:text-zinc-300">
+                    {item.name}
+                  </span>
                 </div>
                 <div className="flex shrink-0 items-center gap-2 font-mono text-[11px] tabular-nums">
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">{formatRupiah(item.amount)}</span>
-                  <span className="w-10 text-right text-slate-500 dark:text-slate-400">
+                  <span className="font-semibold text-zinc-900 dark:text-zinc-100">
+                    {formatRupiah(item.amount)}
+                  </span>
+                  <span className="w-10 text-right text-zinc-400 dark:text-zinc-500">
                     {formatPercent(item.percentage)}
                   </span>
                 </div>

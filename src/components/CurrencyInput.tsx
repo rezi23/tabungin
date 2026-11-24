@@ -29,15 +29,16 @@ export function CurrencyInput({
     onChange(parsed);
   };
 
-  const heightClass = size === 'sm' ? 'h-9 text-xs sm:text-[13px]' : 'h-10 text-sm';
+  const heightClass =
+    size === 'sm' ? 'h-8.5 text-xs' : 'h-10 text-sm';
 
   return (
     <div
-      className={`group flex items-center rounded-lg border border-slate-200/90 bg-white shadow-[inset_0_1px_2px_rgba(15,23,42,0.03)] transition-all focus-within:border-teal-600 focus-within:ring-2 focus-within:ring-teal-600/15 dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-none dark:focus-within:border-teal-400 dark:focus-within:ring-teal-400/20 ${heightClass} ${className}`}
+      className={`group flex items-center rounded-lg border border-zinc-200/90 bg-white transition-all focus-within:border-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 dark:border-zinc-800 dark:bg-zinc-950 dark:focus-within:border-zinc-300 dark:focus-within:ring-zinc-100/10 ${heightClass} ${className}`}
     >
       <span
         aria-hidden="true"
-        className="select-none pl-2.5 pr-1 text-xs font-medium text-slate-400 group-focus-within:text-teal-700 dark:text-slate-500 dark:group-focus-within:text-teal-400"
+        className="select-none pl-2.5 pr-1 font-mono text-[11px] font-medium text-zinc-400 group-focus-within:text-zinc-800 dark:text-zinc-500 dark:group-focus-within:text-zinc-300"
       >
         Rp
       </span>
@@ -52,7 +53,7 @@ export function CurrencyInput({
         value={displayValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="w-full min-w-0 bg-transparent pr-2.5 font-mono font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none tabular-nums dark:text-slate-100 dark:placeholder:text-slate-600"
+        className="w-full min-w-0 bg-transparent pr-2.5 text-right font-mono font-semibold text-zinc-950 placeholder:text-zinc-300 focus:outline-none tabular-nums dark:text-zinc-100 dark:placeholder:text-zinc-600"
       />
     </div>
   );
